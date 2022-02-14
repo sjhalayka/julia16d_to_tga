@@ -9,7 +9,7 @@
 int main(void)
 {
     // Max TGA size is 65535x65535 pixels
-    const unsigned short int res = 300;
+    const unsigned short int res = 500;
 
     const float x_grid_max = 1.5;
     const float x_grid_min = -x_grid_max;
@@ -72,6 +72,8 @@ int main(void)
     {
         Z = complex<float>(Z.real(), y_grid_min);
 
+        cout << "line " << x + 1 << " of " << x_res << endl;
+        
         for (size_t y = 0; y < y_res; y++, Z += y_step_size)
         {
             vertex<float, 16> Z_;
@@ -83,14 +85,20 @@ int main(void)
             float magnitude = iterate_julia(Z_, C, max_iterations, threshold);
 
             // Truncate
+            //if (magnitude > 2.0*threshold)
+            //    magnitude = 2.0*threshold;
+
+            //if (magnitude > threshold)
+            //    magnitude = 0;
+            //else
+            //    magnitude = 1;
+
             if (magnitude > threshold)
-                magnitude =  threshold;
+                magnitude = threshold;
 
             // Normalize
-            magnitude /=  threshold;
+            magnitude /= threshold;
 
-            // Invert
-            //magnitude = 1 - magnitude;
 
             luma.pixel_data[y * x_res + x] = magnitude;
         }

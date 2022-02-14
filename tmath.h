@@ -368,7 +368,7 @@ vertex<T, N> sin(const vertex<T, N>& in)
 
 	all_self_dot = imag_self_dot + (in.vd[0] * in.vd[0]);
 
-	cout << in.vd[1] << endl;
+
 
 	const T l_d = sqrt(all_self_dot);
 	const T l_e = sqrt(imag_self_dot);
@@ -387,4 +387,19 @@ vertex<T, N> sin(const vertex<T, N>& in)
 	return out;
 }
 
+
+template<class T, size_t N>
+vertex<T, N> pow_number_type(vertex<T, N>& in, vertex<T, N>& exponent)
+{
+	vertex<T, N> ln_a = log(log(in));
+	vertex<T, N> ln_b = log(exponent);
+
+	vertex<T, N> out;
+
+	for (size_t i = 0; i < N; i++)
+		out.vd[i] = ln_a.vd[i] + ln_b.vd[i];
+
+	vertex<T, N> o = exp(out);
+	return exp(o);
+}
 

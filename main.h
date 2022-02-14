@@ -24,19 +24,34 @@ float iterate_julia(
     {
         vertex<float, 16> Z_base = Z;
 
-        Z = pow(Z, 2.0f);
+        vertex<float, 16> x;
+        x.vd[0] = 2.0f;
+        //x.vd[1] = 0.1f;
+        //x.vd[2] = 0.2f;
+        //x.vd[3] = 0.0f;
+        //x.vd[4] = 0.5f;
 
-
-        //Z = traditional_mul(Z, Z_base);
-        //Z = traditional_mul(Z, Z_base);
-        //Z = traditional_mul(Z, Z_base);
-        //Z = traditional_mul(Z, Z_base);
-        //Z = traditional_mul(Z, Z_base);
-
+        Z = pow_number_type(Z, x);
         Z = Z + C;
 
 
-       // Z = sin(Z) + mul(C, sin(Z));
+
+
+        //Z = pow(Z, 2.0f);
+
+
+
+
+
+        //Z = traditional_mul(Z, Z_base);
+        //Z = traditional_mul(Z, Z_base);
+        //Z = traditional_mul(Z, Z_base);
+        //Z = traditional_mul(Z, Z_base);
+        //Z = traditional_mul(Z, Z_base);
+        //Z = Z + C;
+
+
+       //Z = sin(Z) + mul(C, sin(Z));
 
         if (Z.magnitude() >= threshold)
             break;

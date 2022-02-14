@@ -24,6 +24,146 @@ using std::endl;
 #include <cstring>
 
 
+class RGB
+{
+public:
+	unsigned char r, g, b;
+};
+
+
+
+
+RGB HSBtoRGB(unsigned short int hue_degree, unsigned char sat_percent, unsigned char bri_percent)
+{
+	float R = 0.0f;
+	float G = 0.0f;
+	float B = 0.0f;
+
+	if (hue_degree > 359)
+		hue_degree = 359;
+
+	if (sat_percent > 100)
+		sat_percent = 100;
+
+	if (bri_percent > 100)
+		bri_percent = 100;
+
+	float hue_pos = 6.0f - ((static_cast<float>(hue_degree) / 359.0f) * 6.0f);
+
+	if (hue_pos >= 0.0f && hue_pos < 1.0f)
+	{
+		R = 255.0f;
+		G = 0.0f;
+		B = 255.0f * hue_pos;
+	}
+	else if (hue_pos >= 1.0f && hue_pos < 2.0f)
+	{
+		hue_pos -= 1.0f;
+
+		R = 255.0f - (255.0f * hue_pos);
+		G = 0.0f;
+		B = 255.0f;
+	}
+	else if (hue_pos >= 2.0f && hue_pos < 3.0f)
+	{
+		hue_pos -= 2.0f;
+
+		R = 0.0f;
+		G = 255.0f * hue_pos;
+		B = 255.0f;
+	}
+	else if (hue_pos >= 3.0f && hue_pos < 4.0f)
+	{
+		hue_pos -= 3.0f;
+
+		R = 0.0f;
+		G = 255.0f;
+		B = 255.0f - (255.0f * hue_pos);
+	}
+	else if (hue_pos >= 4.0f && hue_pos < 5.0f)
+	{
+		hue_pos -= 4.0f;
+
+		R = 255.0f * hue_pos;
+		G = 255.0f;
+		B = 0.0f;
+	}
+	else
+	{
+		hue_pos -= 5.0f;
+
+		R = 255.0f;
+		G = 255.0f - (255.0f * hue_pos);
+		B = 0.0f;
+	}
+
+	if (100 != sat_percent)
+	{
+		if (0 == sat_percent)
+		{
+			R = 255.0f;
+			G = 255.0f;
+			B = 255.0f;
+		}
+		else
+		{
+			if (255.0f != R)
+				R += ((255.0f - R) / 100.0f) * (100.0f - sat_percent);
+			if (255.0f != G)
+				G += ((255.0f - G) / 100.0f) * (100.0f - sat_percent);
+			if (255.0f != B)
+				B += ((255.0f - B) / 100.0f) * (100.0f - sat_percent);
+		}
+	}
+
+	if (100 != bri_percent)
+	{
+		if (0 == bri_percent)
+		{
+			R = 0.0f;
+			G = 0.0f;
+			B = 0.0f;
+		}
+		else
+		{
+			if (0.0f != R)
+				R *= static_cast<float>(bri_percent) / 100.0f;
+			if (0.0f != G)
+				G *= static_cast<float>(bri_percent) / 100.0f;
+			if (0.0f != B)
+				B *= static_cast<float>(bri_percent) / 100.0f;
+		}
+	}
+
+	if (R < 0.0f)
+		R = 0.0f;
+	else if (R > 255.0f)
+		R = 255.0f;
+
+	if (G < 0.0f)
+		G = 0.0f;
+	else if (G > 255.0f)
+		G = 255.0f;
+
+	if (B < 0.0f)
+		B = 0.0f;
+	else if (B > 255.0f)
+		B = 255.0f;
+
+	RGB rgb;
+
+	rgb.r = static_cast<unsigned char>(R);
+	rgb.g = static_cast<unsigned char>(G);
+	rgb.b = static_cast<unsigned char>(B);
+
+	return rgb;
+}
+
+
+
+
+
+
 // http://www.paulbourke.net/dataformats/tga/
 class tga
 {
@@ -114,6 +254,22 @@ bool write_float_grayscale_to_tga(const char* const filename, const float_graysc
 		{
 			size_t float_index = j * px + i;
 			size_t fb_index = 3 * float_index;
+
+			float gray_val = l.pixel_data[float_index];
+			RGB rgb = HSBtoRGB(static_cast<unsigned short>(75.0 * gray_val), 75, 100);
+
+			//if (gray_val == 1)
+			//{
+			//	pixel_data[fb_index] = 255;
+			//	pixel_data[fb_index + 1] = 255;
+			//	pixel_data[fb_index + 2] = 255;
+			//}
+			//else
+			//{
+			//	pixel_data[fb_index] = rgb.b;
+			//	pixel_data[fb_index + 1] = rgb.g;
+			//	pixel_data[fb_index + 2] = rgb.r;
+			//}
 
 			pixel_data[fb_index] = static_cast<unsigned char>(l.pixel_data[float_index] * 255.0);
 			pixel_data[fb_index + 1] = static_cast<unsigned char>(l.pixel_data[float_index] * 255.0);
@@ -282,5 +438,8 @@ bool convert_tga_to_float_grayscale(const char* const filename, tga& t, float_gr
 
 	return true;
 }
+
+
+
 
 #endif
